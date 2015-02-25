@@ -1,0 +1,756 @@
+
+# This is an example of what can be done with Generic Dissector.
+# This is not a real example (ie used in real life).
+# I just put here many possible syntax.
+
+# If you want to understand how to build a .fdesc and .wsgd from zero,
+#  please refer to :
+# http://wsgd.free.fr/first_proto.html
+#  and :
+# http://wsgd.free.fr/fdesc_format.html
+# http://wsgd.free.fr/wsgd_format.html
+
+# NB: the declaration order is important,
+#      i.e. you must declare a type before using it.
+
+
+###############################################################################
+# Message identifier
+###############################################################################
+
+enum8 T_Type_message
+{
+  ArduinoWarz           23
+}
+
+###############################################################################
+# A very specific way to know the size of the message.
+# To match the example_capture.pcap
+# Do not use this (or this kind of scheme) without a very good reason.
+###############################################################################
+
+function  uint32  compute_size_after_header (in T_Type_message  msg_id)
+{
+  hide var uint32  size_after_header = 0;
+
+  switch(msg_id)     # T_Type_message
+  {
+  # The message fit the packet.
+  case T_Type_message::ArduinoWarz     :  set  size_after_header =   23;
+  
+  # The message is on 2 packets.
+  case T_Type_message::cs_request   :  set  size_after_header =  23;
+  }
+  
+  return  size_after_header;
+}
+
+###############################################################################
+# Header
+###############################################################################
+
+# Forward declaration
+struct  T_global_data_action;
+
+struct  T_msg_header_type_wsgd
+{
+  byte_order          big_endian;
+
+  T_Type_message      Type;
+  spare               not_used_field;
+
+  var uint16          Size = compute_size_after_header(Type);
+  
+  hide var string     Msg_Title = print ("%s (0x%x), Size=%d, Hello %s", Type, Type, Size, getenv("USERNAME"));
+
+
+  T_global_data_action    "";
+}
+
+struct  T_msg_header_type
+{
+  T_msg_header_type_wsgd  "";
+}
+
+###############################################################################
+# Basic types
+###############################################################################
+
+struct T_test_basic_types
+{
+  spare     not_displayed_byte;
+
+  # char are managed as integer
+  # Not very interesting
+#   char     char ;
+#  schar     schar ;
+#  uchar     uchar ;
+  raw(3)    three_bytes;
+
+  bool1     bool1 ;
+  bool8     bool8 ;
+  bool16    bool16 ;
+  bool32    bool32 ;
+   int2     int2 ;
+   int3     int3 ;
+   int4     int4 ;
+   int5     int5 ;
+   int6     int6 ;
+   int7     int7 ;
+   int8     int8 ;
+   int9     int9 ;
+   int10    int10 ;
+   int11    int11 ;
+   int12    int12 ;
+   int13    int13 ;
+   int14    int14 ;
+   int15    int15 ;
+   int16    int16 ;
+   int17    int17 ;
+   int18    int18 ;
+   int19    int19 ;
+   int20    int20 ;
+   int21    int21 ;
+   int22    int22 ;
+   int23    int23 ;
+   int24    int24 ;
+   int25    int25 ;
+   int26    int26 ;
+   int27    int27 ;
+   int28    int28 ;
+   int29    int29 ;
+   int30    int30 ;
+   int31    int31 ;
+   int32    int32 ;
+   int64    int64 ;
+  uint1     uint1 ;
+  uint2     uint2 ;
+  uint3     uint3 ;
+  uint4     uint4 ;
+  uint5     uint5 ;
+  uint6     uint6 ;
+  uint7     uint7 ;
+  uint8     uint8 ;
+  uint9     uint9 ;
+  uint10    uint10 ;
+  uint11    uint11 ;
+  uint12    uint12 ;
+  uint13    uint13 ;
+  uint14    uint14 ;
+  uint15    uint15 ;
+  uint16    uint16 ;
+  uint17    uint17 ;
+  uint18    uint18 ;
+  uint19    uint19 ;
+  uint20    uint20 ;
+  uint21    uint21 ;
+  uint22    uint22 ;
+  uint23    uint23 ;
+  uint24    uint24 ;
+  uint25    uint25 ;
+  uint26    uint26 ;
+  uint27    uint27 ;
+  uint28    uint28 ;
+  uint29    uint29 ;
+  uint30    uint30 ;
+  uint31    uint31 ;
+  uint32    uint32 ;
+
+  float32   float32 ;
+  float64   float64 ;
+
+  string                       string ;
+  string(float64 > 0 ? 2 : 4)  string_2_or_4 ;
+# string_nl, string_nl(<nb_bytes>)          idem string + manage "\n" or "\r\n" as end of string
+
+  padding_bits              padding_bits;    # permits to move to the next entire byte position
+                                             # Do nothing if already on an entire byte position
+  raw(int31 > 0 ? 7 : 5)    raw;             # dump hexa (nb_bytes could be * in some cases)
+                                             #  must start on an entire byte position
+}
+
+###############################################################################
+# Functions
+###############################################################################
+
+# Just an example, look at date.get_string_from_seconds & date.get_string_from_days
+function string  unix_time_to_str (in int64{min=0}  value)
+{
+  hide var uint32   value_work = value;
+  hide var uint16   sec = value_work % 60;
+       set          value_work = (value_work - sec) / 60;
+  hide var uint16   min = value_work % 60;
+       set          value_work = (value_work - min) / 60;
+  hide var uint16   hour = value_work % 24;
+       set          value_work = (value_work - hour) / 24;
+
+  hide var int16    day_since_1970 = value_work;
+  
+  hide var int16    year = 1970;
+  hide var int16    month = 1;
+  while (1)
+  {
+    hide var int16  days_in_year = ((year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0))) ? 365 : 366;
+    if (day_since_1970 <= days_in_year)
+    {
+      break;
+    }
+    set day_since_1970 = day_since_1970 - days_in_year;
+    set year           = year + 1;
+  }
+  while (1)
+  {
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;
+    if ((year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0)))
+    {
+      if (day_since_1970 <= 29)  { break; }
+      set day_since_1970 = day_since_1970 - 29;
+      set month          = month + 1;
+    }
+    else
+    {
+      if (day_since_1970 <= 28)  { break; }
+      set day_since_1970 = day_since_1970 - 28;
+      set month          = month + 1;
+    }
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;
+    if (day_since_1970 <= 30)  { break; }
+    set day_since_1970 = day_since_1970 - 30;
+    set month          = month + 1;
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;
+    if (day_since_1970 <= 30)  { break; }
+    set day_since_1970 = day_since_1970 - 30;
+    set month          = month + 1;
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;
+    if (day_since_1970 <= 30)  { break; }
+    set day_since_1970 = day_since_1970 - 30;
+    set month          = month + 1;
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;
+    if (day_since_1970 <= 30)  { break; }
+    set day_since_1970 = day_since_1970 - 30;
+    set month          = month + 1;
+    if (day_since_1970 <= 31)  { break; }
+    set day_since_1970 = day_since_1970 - 31;
+    set month          = month + 1;    
+  }
+
+  return  print("%s/%02d/%02d %02d:%02d:%02d", year, month, day_since_1970+1, hour, min, sec);
+}
+
+function string  unix_time_ms_to_str (in int64{min=0}  value, in string  debug_msg = "")
+{
+  hide var int64    value_work = value;
+  hide var uint16   ms = value_work % 1000;
+       set          value_work = (value_work - ms) / 1000;
+  hide var string   str = unix_time_to_str(value_work) + print(".%03d", ms);
+  return  str;
+}
+
+function any  addition (in any  lhs, in any  rhs)
+{
+  return  (lhs + rhs);
+}
+
+function string  get_str_id (in int64{min=0}  id)
+{
+  return  print("Id=%s", id);
+}
+
+function void  fct_void (in string  message, in string  message_2 = "")
+{
+  print  ("%s", message);
+  if (message_2 != "")
+  {
+    print  ("%s", message_2);
+  }
+}
+
+
+struct  T_test_function
+{
+  print ("addition(-234,8902)=%s", addition(-234,8902));
+  print ("addition(-2.7,89.2)=%s", addition(-2.7,89.2));
+#  print ("addition('21',89.2)=%s", addition('21',89.2));   # fatal string + numeric
+  print ("addition('21','92')=%s", addition('21','92'));
+
+#  print ("%s", get_str_id('cs_request'));    # fatal get_str_id expecting int64
+#  print ("%s", get_str_id(-902));            # fatal get_str_id expecting positive integer
+  print ("%s", get_str_id(8902));
+
+  var string  unix_time_ms = unix_time_ms_to_str(12345678);
+
+  call  fct_void ("salut");
+  call  fct_void ("salut", "2");
+#  call  fct_void ("salut", "2", "");                          # nb params  NOT checked at initialisation
+#  call  fct_void ("salut", 2);                                # type param NOT checked at initialisation
+}
+
+###############################################################################
+# Built-in functions
+###############################################################################
+
+function void  error_if_not_equal (in any  lhs, in any  rhs)
+{
+  if (lhs != rhs)
+  {
+    error ("lhs (%s) != rhs (%s)", lhs, rhs);
+  }
+  else
+  {
+    print ("gives (%s)", lhs);
+  }
+}
+
+struct  T_test_builtin_functions
+{
+  # Function parameters are NOT modified.
+  
+  # to_string
+  call  error_if_not_equal (to_string(1234), "1234");
+  call  error_if_not_equal (to_string (1234) + "5", "12345");
+  call  error_if_not_equal (to_string(12.34), "12.34");
+  
+  # to_numeric
+  call  error_if_not_equal (to_numeric ("12" + "34"), 1234);
+  call  error_if_not_equal (to_numeric ("12" + "3") * 3, 369);
+  
+  call  error_if_not_equal (to_numeric ("1.2" + "34"), 1.234);
+  call  error_if_not_equal (to_numeric ("1.2" + "3") / 2, 0.615);
+
+  # to_float
+  call  error_if_not_equal (to_float ("12" + "34"), 1234.0);
+  call  error_if_not_equal (to_float ("1.2" + "34"), 1.234);
+
+  # to_integer
+  call  error_if_not_equal (to_integer ("12" + "34"), 1234);
+  call  error_if_not_equal (to_integer ("12", 0), 12);
+  call  error_if_not_equal (to_integer ("12", 8), 012);      # display 12 !!!
+  call  error_if_not_equal (to_integer ("12", 16), 0x12);    # display 12 !!!
+  
+
+  # string.length
+  call  error_if_not_equal (string.length ("1234"), 4);
+  call  error_if_not_equal (string.length ("abcde"), 5);
+
+  # string.substr
+  call  error_if_not_equal (string.substr ("12345678", 2), "345678");
+  call  error_if_not_equal (string.substr ("abcdefgh", 1, 3), "bcd");
+
+  # string.erase
+  call  error_if_not_equal (string.erase ("12345678", 2), "12");
+  call  error_if_not_equal (string.erase ("abcdefgh", 1, 3), "aefgh");
+
+  # string.insert
+  call  error_if_not_equal (string.insert ("12345678", 2, "yo"), "12yo345678");
+
+  # string.replace
+  call  error_if_not_equal (string.replace ("abcdefgh", 1, 3, "123"), "a123efgh");
+
+  # string.replace_all
+  call  error_if_not_equal (string.replace_all ("abcdefgh - abcdefgh", "bc", "xyz"), "axyzdefgh - axyzdefgh");
+  call  error_if_not_equal (string.replace_all ("abcdefgh - abcdefgh", " ", ""), "abcdefgh-abcdefgh");
+
+  # string.find
+  call  error_if_not_equal (string.find ("12345678", "2"), 1);
+  call  error_if_not_equal (string.find ("abcdefgh", "ef"), 4);
+  call  error_if_not_equal (string.find ("abcdefgh", "fe"), string::npos);
+  
+}
+
+###############################################################################
+# Const
+# "::" is mandatory
+# Forbidden :
+# - array,
+# - specifications no_statement, transform, display, constrains ...
+# - struct, switch, ...
+###############################################################################
+
+const uint16   konst::int = 2;
+const float32  konst::flt = -2.6;
+const string   konst::str = "abcdefgh - abcdefgh";
+
+const uint32   konst::int_enum = T_Type_message::cs_start;
+const T_Type_message   konst::enum = T_Type_message::cs_start;
+
+const float64  Math::PI = 3.1415927;
+const float64  Math::deg_to_rad = Math::PI / 180;
+
+const string   konst::str_fct = string.replace_all (konst::str, "bc", "xyz");
+
+
+struct  T_test_const
+{
+  call  error_if_not_equal (konst::int, 2);
+  call  error_if_not_equal (konst::flt, -2.6);
+  call  error_if_not_equal (konst::str, "abcdefgh - abcdefgh");
+
+  call  error_if_not_equal (konst::int_enum, T_Type_message::cs_start);
+  call  error_if_not_equal (konst::enum, 7077899);
+
+  call  error_if_not_equal (Math::PI, 3.1415927);
+  print ("%s", Math::deg_to_rad);
+
+  call  error_if_not_equal (konst::str_fct, "axyzdefgh - axyzdefgh");
+}
+
+###############################################################################
+# Alias & Specifications
+###############################################################################
+
+alias  T_y         uint16{q=4}{d=hex} ;
+
+# display expression permits to specify any valid expression
+#  including calling functions
+#  with "this" parameter (= the value itself)
+alias  T_msg_time  int64{ns=-1}{de=unix_time_ms_to_str(this)} ;
+
+struct  T_test_specifications
+{
+  # x = <integer read> * quantum=0.237 + offset=231.25
+  # x must be <= 65537
+  uint32{q=0.237:o=231.25}{max=65537}     x;
+
+  # y = <integer read> * quantum=4
+  # y is displayed in hexadecimal
+  # y must be >= 0x10
+  T_y{min=0x10}              y;
+
+  # y_bis must be >= 0x20 and <= 203
+  T_y{min=0x20}{max=203}     y_bis;
+
+  # the integer read is 
+  #  incremented of the offset 22
+  # z is displayed in binary
+  # z must be >= -128000 and <= 128000
+  uint32{o=22}{d=bin}{min=-128000:max=128000}    z;
+
+  # if the integer read is equal to -1 (No statement value)
+  #  No_statement will be displayed (other specifications do not apply)
+  # else
+  #  specifications apply
+  int32{ns=-1}{q=12:o=25}{d=%d  units per hour}{min=-128000:max=128000}  alpha;
+  
+  # 
+#  T_msg_time      msg_time;
+}
+
+###############################################################################
+# Array
+###############################################################################
+
+struct  T_test_arrays
+{
+  uint8                                                      a_value;
+  uint8[a_value == 0 ? 5 : ((a_value * 2) / a_value) + 2]    an_array;
+  uint8                                                      another_value;
+  var uint8                                                  another_array_dim2 = a_value == 0 ? 2 : 5 ;
+  var uint8                                                  another_array_dim3 = another_value == 0 ? 4 : 6;
+  uint8[3][another_array_dim2][another_array_dim3]           another_array;
+  var uint16                                                 array_sum = another_array[2][1][3] + another_array[0][0][0] + another_array[1][0][2];
+
+  # Variable array  
+  var uint16[3]                  var_int_array = 136;
+  var float32[2]                 var_flt_array = 136.136;
+  var string[4]                  var_str_array = "cent trente six";
+
+  var uint8                      var_idx = 0;
+  set var_int_array[var_idx+1] = var_int_array[var_idx+1] + 1;
+  set var_str_array[var_idx+1] = var_str_array[var_idx+1] + " et quelques ...";
+  set var_flt_array[var_idx+1] = var_flt_array[var_idx+1] + 1.111;
+  
+  print ("modif var_int_array[var_idx+1] = %s", var_int_array[var_idx+1]);
+  print ("modif var_str_array[var_idx+1] = %s", var_str_array[var_idx+1]);
+  print ("modif var_flt_array[var_idx+1] = %s", var_flt_array[var_idx+1]);
+
+  set var_flt_array[var_idx+(2/2)] = var_int_array[var_idx+1] + var_flt_array[1];
+  print ("modif var_flt_array[var_idx+1] = %s", var_flt_array[var_idx+1]);
+}
+
+###############################################################################
+# Enum
+###############################################################################
+
+enum8  T_enumeration
+{
+  off          0
+  on           1
+  big        100
+  symbol    1687
+  bigger       -       # - means previous value + 1
+  biggest      -
+}
+
+# The same enum with a different implementation size.
+enum11  T_enumeration11  as  T_enumeration;
+
+# Enum type wich expand an existing one
+enum12  T_enumeration_more  expand  T_enumeration
+{
+  more_than_biggest    2010
+}
+
+struct  T_test_enum
+{
+  T_enumeration11     enum11;
+  T_enumeration_more  enum_more;
+  if (enum11 == T_enumeration::on)
+  {
+    chat ("enum11 is on (%s = %d)", enum11, enum11);
+  }
+  else
+  {
+    note ("enum11 is NOT on (%s = %d)", enum11, enum11);
+  }
+  padding_bits        padding_bits;    # permits to move to the next entire byte position
+}
+
+###############################################################################
+# Bitfield
+###############################################################################
+
+bitfield32  T_bitfield_1
+{
+  uint3{d=bin}                             field1 ;             # lower level bits
+  hide uint2                               field2_unused ;
+  uint15{q=2.34:o=-117.35}{min=-105.17}    field3 ;
+  T_enumeration11                          field4;
+  bool1                                    field5 ;             # higher level bits
+}
+
+struct  T_test_bitfield
+{
+  if (1)
+  {
+    T_bitfield_1    bitfield_1;
+  }
+  else
+  {
+    # Same thing directly inline
+    bitfield32  
+    {
+      uint3{d=bin}                             field1 ;             # lower level bits
+      hide uint2                               field2_unused ;
+      uint15{q=2.34:o=-117.35}{min=-105.17}    field3 ;
+      T_enumeration11                          field4;
+      bool1                                    field5 ;             # higher level bits
+    }  bitfield_1_inline;
+  }
+}
+
+###############################################################################
+# Loop
+###############################################################################
+
+struct  T_test_loop
+{
+  hide var uint32  idx = 0;
+  while (idx < 10)
+  {
+    set     idx = idx + 1;
+    uint8   field_inside_loop;
+    if (idx >= 8)
+    {
+      continue;
+    }
+    uint8   field_inside_loop_after_continue;
+  }
+
+  hide var uint32  idx_2 = 0;
+  while (1)
+  {
+    set     idx_2 = idx_2 + 1;
+    uint3   field_inside_infinite_loop;
+    if (idx_2 >= 2)
+    {
+      break;
+    }
+  }
+  
+  loop_size_bits  12
+  {
+    uint1    bit_inside_loop_size_bits;
+    uint6    bits_inside_loop_size_bits;
+    # NB: this loop will extract 1 + 6 + 1 + 6 = 14 bits > 12 bits
+    #     There is no error (at this time).
+  }
+
+  loop_size_bytes  2
+  {
+    uint1    bit_inside_loop_size_bytes;
+  }
+  
+  padding_bits              padding_bits;    # permits to move to the next entire byte position
+                                             # Do nothing if already on an entire byte position
+}
+
+###############################################################################
+# Switch
+###############################################################################
+
+enum16 T_Operation
+{
+  CREATION      0
+  MODIFICATION  1
+  DELETION      2
+}
+switch T_Operation_switch    # T_Operation
+{
+case  T_Operation::MODIFICATION  : print ("MODIFICATION value");
+case  T_Operation::DELETION      : print ("DELETION value");
+case  T_Operation::CREATION      :
+  print ("CREATION value");
+  uint16       value;
+default             : print ("default value");
+}
+
+struct  T_test_switch
+{
+  T_Operation                    operation;
+  T_Operation_switch(operation)  "";
+}
+
+###############################################################################
+# Pinfo
+###############################################################################
+
+struct  T_test_pinfo
+{
+  print    pinfo.* ;
+}
+
+###############################################################################
+# Global data
+###############################################################################
+
+struct  T_test_global
+{
+  print    global.* ;
+}
+
+struct  T_global_data
+{
+  var uint32    msg_counter = 0;
+}
+struct T_global_data_action
+{
+#  set  msg_counter = msg_counter + 1;           # fatal, msg_counter unknow
+  set  global.msg_counter = global.msg_counter + 1;
+}
+
+###############################################################################
+# Messages
+###############################################################################
+
+struct  T_msg_cs_start
+{
+  T_msg_header_type        Header;
+  uint32                   id;
+  string(4)                acronym;
+}
+
+struct  T_msg_sc_start_ack
+{
+  T_msg_header_type        Header;
+
+  chat  "Let's try the basic types" ;
+  T_test_basic_types       test_basic_types;
+
+  note  "Let's try the specifications" ;
+  T_test_specifications    test_specifications;
+
+  warning  "Let's try the arrays" ;
+  T_test_arrays            test_arrays;
+
+  error  "Let's try the enums" ;
+  T_test_enum              test_enum;
+
+  print  "Let's try the bitfields" ;
+  T_test_bitfield          test_bitfield;
+
+  print  "Let's try the loops" ;
+  T_test_loop              test_loop;
+
+  print  "Let's try the switch" ;
+  T_test_switch            test_switch;
+
+  print  "Let's try the function" ;
+  T_test_function          test_function;
+
+  # pinfo will NOT work (or partially work)
+  #  if wireshark version != wireshark version used for generic.dll compilation
+#  print  "Let's try the pinfo data" ;
+#  T_test_pinfo             test_pinfo;
+
+  print  "Let's try the global" ;
+  T_test_global            test_global;
+  
+  raw(*)                   end_of_msg;
+}
+
+struct  T_msg_cs_request
+{
+  T_msg_header_type        Header;
+  uint32                   id;
+  string(4)                acronym;
+  raw(16)                  unknow_data;
+  string(12)               request;
+  uint16                   request_id;
+  uint16                   request_counter;
+}
+
+struct  T_msg_sc_ctx_data
+{
+  T_msg_header_type        Header;
+  raw(*)                   end_of_msg;
+}
+
+
+
+struct  T_msg_unknow
+{
+  T_msg_header_type        Header;
+  raw(*)                   end_of_msg;
+}
+
+###############################################################################
+# Main switch
+###############################################################################
+
+switch  T_msg_switch  T_Type_message
+{
+case  T_Type_message::cs_start       : T_msg_cs_start         "";  # "" permits to avoid a useless supplementary tree
+case  T_Type_message::sc_start_ack   : T_msg_sc_start_ack     "";
+case  T_Type_message::cs_request     : T_msg_cs_request       "";
+case  T_Type_message::sc_ctx_data    : T_msg_sc_ctx_data      "";
+default        : 
+
+#  fatal ("Unknow msg identifier %d (%s)", Type, Type);
+  T_msg_unknow  "";
+}
+
+###############################################################################
+# Main type
+# With the current definition,
+#  "MSG_MAIN_TYPE      T_msg_main_type" is strictly identical to
+#  "MSG_MAIN_TYPE      T_msg_switch(Type)"
+#  inside <file>.wsgd
+###############################################################################
+
+struct  T_msg_main_type
+{
+  T_msg_switch(Type)    "";
+}

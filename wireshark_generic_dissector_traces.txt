@@ -1,0 +1,72 @@
+  1423605689.919            wireshark version                 = 1.12.3
+  1423605689.919            wsgd generation data :
+  1423605689.919            - wireshark compilation version   = 1.12.0
+  1423605689.919            - WIRESHARK_VERSION_NUMBER        = 11200
+  1423605689.919            - compilation date                = Jan  4 2015
+  1423605689.919            - compiler                        = Visual C++ 1600
+  1423605689.919            get_progfile_dir     = C:\Program Files\Wireshark
+  1423605689.919            get_plugin_dir       = C:\Program Files\Wireshark\plugins\1.12.3
+  1423605689.919            get_datafile_dir     = C:\Program Files\Wireshark
+  1423605689.919            get_systemfile_dir   = C:\Program Files\Wireshark
+  1423605689.919            get_profiles_dir     = C:\Users\Shai\AppData\Roaming\Wireshark\profiles
+  1423605689.919            get_persdatafile_dir = C:\Users\Shai\Documents
+  1423605689.919            locale LC_ALL         = Hebrew_Israel.1255
+  1423605689.919            locale LC_COLLATE     = Hebrew_Israel.1255
+  1423605689.919            locale LC_CTYPE       = Hebrew_Israel.1255
+  1423605689.919            locale LC_MONETARY    = Hebrew_Israel.1255
+  1423605689.919            locale LC_NUMERIC     = Hebrew_Israel.1255
+  1423605689.919            locale LC_TIME        = Hebrew_Israel.1255
+  1423605689.919      Enter cpp_proto_register_generic 
+  1423605689.919      Enter get_files_in_dir dir_name=C:\Users\Shai\AppData\Roaming\Wireshark\profiles  begin_file_name=  end_file_name=.wsgd
+E 1423605689.919            filter C:\Users\Shai\AppData\Roaming\Wireshark\profiles\*.wsgd not found
+  1423605689.919      Leave get_files_in_dir
+  1423605689.919      Enter get_files_in_dir dir_name=C:\Users\Shai\Documents  begin_file_name=  end_file_name=.wsgd
+E 1423605689.919            filter C:\Users\Shai\Documents\*.wsgd not found
+  1423605689.919      Leave get_files_in_dir
+  1423605689.919      Enter get_files_in_dir dir_name=C:\Program Files\Wireshark  begin_file_name=  end_file_name=.wsgd
+E 1423605689.919            filter C:\Program Files\Wireshark\*.wsgd not found
+  1423605689.919      Leave get_files_in_dir
+  1423605689.919      Enter get_files_in_dir dir_name=C:\Program Files\Wireshark\plugins\1.12.3  begin_file_name=  end_file_name=.wsgd
+  1423605689.919      Leave get_files_in_dir
+  1423605689.919      Enter set_max_nb_of_protocol_data 2
+  1423605689.919      Leave set_max_nb_of_protocol_data
+  1423605689.919      Enter cpp_proto_register_generic wsgd_file_name=C:\Program Files\Wireshark\plugins\1.12.3\Arduwarz_Proto.wsgd
+  1423605689.919      Enter read_file_wsgd C:\Program Files\Wireshark\plugins\1.12.3\Arduwarz_Proto.wsgd
+  1423605689.920            PROTONAME = ArduinoWarz
+  1423605689.920            PROTOSHORTNAME = arduwarz
+  1423605689.920            PROTOABBREV = arduwarz
+  1423605689.920            PARENT_SUBFIELD = udp.port
+  1423605689.920            PARENT_SUBFIELD = tcp.port
+  1423605689.920            MSG_HEADER_TYPE = T_msg_header_type_wsgd
+  1423605689.920            MSG_ID_FIELD_NAME = Type
+  1423605689.920            MSG_TITLE = Msg_Title
+  1423605689.920            MSG_TOTAL_LENGTH = Size + 4
+  1423605689.920            MSG_MAIN_TYPE = T_msg_switch(Type)
+  1423605689.920            GLOBAL_DATA_TYPE = T_global_data
+  1423605689.931   11 Leave read_file_wsgd
+  1423605689.931      Leave cpp_proto_register_generic
+  1423605689.931      Enter cpp_proto_register_generic wsgd_file_name=C:\Program Files\Wireshark\plugins\1.12.3\example_with_capture.wsgd
+  1423605689.931      Enter read_file_wsgd C:\Program Files\Wireshark\plugins\1.12.3\example_with_capture.wsgd
+  1423605689.931            PROTONAME = Example_2 Protocol
+  1423605689.931            PROTOSHORTNAME = Example_2
+  1423605689.931            PROTOABBREV = example_2
+  1423605689.931            PARENT_SUBFIELD = udp.port
+  1423605689.931            PARENT_SUBFIELD = tcp.port
+  1423605689.931            MSG_HEADER_TYPE = T_msg_header_type_wsgd
+  1423605689.931            MSG_ID_FIELD_NAME = Type
+  1423605689.931            MSG_TITLE = Msg_Title
+  1423605689.931            MSG_TOTAL_LENGTH = Size + 4
+  1423605689.931            MSG_MAIN_TYPE = T_msg_switch(Type)
+  1423605689.931            GLOBAL_DATA_TYPE = T_global_data
+  1423605689.941   10 Leave read_file_wsgd
+  1423605689.941      Leave cpp_proto_register_generic
+  1423605689.941      Leave cpp_proto_register_generic
+F 1423605690.486  545       FATAL :  Bad integer value 1507341 for parameter T_Type_message msg_id at T_type_definitions.cpp[570]
+F 1423605690.486            interpret_inside_frame.get_P_decode_stream_frame() (0000000000F3AD90)  != NULL (0)  at T_interpret_inside_frame.cpp[142]
+F 1423605690.486            Unexpected exception interpret_inside_frame.get_P_decode_stream_frame() (0000000000F3AD90)  != NULL (0)  at T_interpret_inside_frame.cpp[142] at byte_interpret_common.cpp line=229
+F 1423605690.491    5       FATAL :  Bad integer value 1507341 for parameter T_Type_message msg_id at T_type_definitions.cpp[570]
+F 1423605690.491            interpret_inside_frame.get_P_decode_stream_frame() (0000000000F39C20)  != NULL (0)  at T_interpret_inside_frame.cpp[142]
+F 1423605690.491            Unexpected exception interpret_inside_frame.get_P_decode_stream_frame() (0000000000F39C20)  != NULL (0)  at T_interpret_inside_frame.cpp[142] at byte_interpret_common.cpp line=229
+F 1423605690.497    6       FATAL :  Bad integer value 1507341 for parameter T_Type_message msg_id at T_type_definitions.cpp[570]
+F 1423605690.497            interpret_inside_frame.get_P_decode_stream_frame() (0000000000F3ABD0)  != NULL (0)  at T_interpret_inside_frame.cpp[142]
+F 1423605690.497            Unexpected exception interpret_inside_frame.get_P_decode_stream_frame() (0000000000F3ABD0)  != NULL (0)  at T_interpret_inside_frame.cpp[142] at byte_interpret_common.cpp line=229
