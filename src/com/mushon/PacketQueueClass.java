@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-class PacketQueueClass {
+public class PacketQueueClass {
 
     Queue<MyPacketBuilder> q = new LinkedList<MyPacketBuilder>();
     private int queueMaxSize = 20;

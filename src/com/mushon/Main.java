@@ -7,6 +7,8 @@ import org.jivesoftware.smack.PacketCollector;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.filter.PacketFilter;
 
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
@@ -14,8 +16,9 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
-        try {
-            MyPacketBuilder PB1 = new MyPacketBuilder("localhost",1492,9001,1);
+        /*try {
+            DatagramSocket serverSocket = new DatagramSocket(9001, InetAddress.getByName("localhost1"));
+            MyPacketBuilder PB1 = new MyPacketBuilder(serverSocket,1492,1);
             PB1.BuildPacket(MessageType.UNITCOMMAND);
             PB1.SendNextPacket();
             System.out.println(PB1.getIPAddressStr());
@@ -29,6 +32,6 @@ public class Main {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }

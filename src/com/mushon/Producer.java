@@ -2,7 +2,7 @@ package com.mushon;
 //http://www.codeproject.com/Tips/813407/Producer-Consumer-Problem#
 import Network.MyPacketBuilder;
 
-class Producer implements Runnable {
+public class Producer implements Runnable {
     PacketQueueClass messageQueue;
     MyPacketBuilder PB;
     //String emailMessageContent;
