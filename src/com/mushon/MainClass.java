@@ -9,9 +9,9 @@ public class MainClass {
     public static void main(String... s) throws InterruptedException, SocketException, UnknownHostException {
 
         try {
-
-        DatagramSocket serverSocket = new DatagramSocket(9009);
-        serverSocket.connect(InetAddress.getByName("192.168.1.101"), 9001);
+        int udpPort = 9001;
+        DatagramSocket serverSocket = new DatagramSocket(udpPort);
+        serverSocket.connect(InetAddress.getByName("192.168.1.101"), udpPort);
 
         MyPacketBuilder PB1 = new MyPacketBuilder(serverSocket,1492,1,"192.168.1.101");
 
