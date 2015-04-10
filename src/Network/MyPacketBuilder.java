@@ -38,13 +38,10 @@ public class MyPacketBuilder implements IPacketBuilder {
     public MyPacketBuilder() {
     }
 
-    //public MyPacketBuilder(String IPAddressStr, int sessionPort, int maxPacketSize, long unitID) throws SocketException, UnknownHostException {
     public MyPacketBuilder(DatagramSocket socket, int maxPacketSize, long unitID, String IPAddressStr) throws SocketException, UnknownHostException {
-        //this.IPAddress = socket.getInetAddress();
         this.IPAddressStr = IPAddressStr;
         this.maxPacketSize = maxPacketSize;
         this.sessionPort = socket.getPort();
-        //this.sessionPort = sessionPort;
         this.unitID = unitID;
 
 
@@ -59,8 +56,6 @@ public class MyPacketBuilder implements IPacketBuilder {
 
     @Override
     public void SendNextPacket() {
-        //DatagramPacket sendPacket =  new DatagramPacket(sendData.getArrayAsByteArray(), sendData.getLength(), getIPAddress(), getSessionPort());
-        //SocketAddress socAddress = new InetSocketAddress(getSessionPort());
         DatagramPacket sendPacket =  new DatagramPacket(sendData.getArrayAsByteArray(), sendData.getLength());
         try {
             serverSocket.send(sendPacket);
@@ -152,15 +147,6 @@ public class MyPacketBuilder implements IPacketBuilder {
         return null;
     }
 
-
-
-
-    /*
-        System.out.println("Length: " + sendData.getLength());
-        sendData.PrintByteArray();System.out.println();
-        DatagramPacket sendPacket =  new DatagramPacket(sendData.getArrayAsByteArray(), sendData.getLength(), IPAddress, port);
-        serverSocket.send(sendPacket);
-     */
 
 
 

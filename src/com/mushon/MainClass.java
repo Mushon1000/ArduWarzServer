@@ -10,6 +10,7 @@ public class MainClass {
 
         try {
         int udpPort = 9001;
+        int socketTimeOut = 60000;
         DatagramSocket serverSocket = new DatagramSocket(udpPort);
         serverSocket.connect(InetAddress.getByName("192.168.1.101"), udpPort);
 
@@ -21,12 +22,12 @@ public class MainClass {
 
         new Thread(new Consumer(PB1,messageQueue)).start();
 
-        Client client = new Client(serverSocket); //client reader for receiving packets
+        Client client = new Client(serverSocket, socketTimeOut); //client reader for receiving packets
         client.start();
 
 
         MyKeyboardReader keyboardReader = new MyKeyboardReader(PB1,messageQueue); //keyboard reader for reading commands from user
-        System.out.println("Server started - enter w\\s\\a\\d & Enter...");
+        System.out.println("Server started - enter w\\x\\a\\d\\s & Enter...");
         keyboardReader.start();
 
 
