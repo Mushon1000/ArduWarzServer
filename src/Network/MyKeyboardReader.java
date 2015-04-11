@@ -97,19 +97,29 @@ public class MyKeyboardReader extends Thread {
                     PB.setCurrentUnitCommandOpCode(UnitCommandOpCode.SERVOABACKWARDSTEPS);
                     PB.BuildPacket(MessageType.UNITCOMMAND);
                 }else if (cmd.toString().equals("power")) {
-                    motorPower -= 10;
-                    if (motorPower < 100)
-                        motorPower = 255;
-                    PB.setCurrentUnitCommandDurationMillis(motorPower);
-                    PB.setCurrentUnitCommandOpCode(UnitCommandOpCode.DEVICEMOTORSPOWER);
-                    PB.BuildPacket(MessageType.UNITCOMMAND);
+                    System.out.println("Please enter power val (100-255)");
+                    cmd = br.readLine();
+                    Integer tempInteger = new Integer(cmd);
+                    if (tempInteger > 99 && tempInteger < 256) {
+                        //motorPower -= 10;
+                        //if (motorPower < 100)
+                            motorPower = tempInteger;
+                        System.out.println("Sending power val: " + motorPower);
+                        PB.setCurrentUnitCommandDurationMillis(motorPower);
+                        PB.setCurrentUnitCommandOpCode(UnitCommandOpCode.DEVICEMOTORSPOWER);
+                        PB.BuildPacket(MessageType.UNITCOMMAND);
+                    }else{
+                        System.out.println("Power val out of range: " + motorPower);
+                    }
                 }
 
                 new Thread(new Producer(PB, MessageQueue)).start();
-
+            Thread.sleep(50);
             } catch (IOException ioe) {
                 System.out.println("IO error trying to read your name!");
                 System.exit(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
 
