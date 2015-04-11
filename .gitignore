@@ -2,6 +2,8 @@
 *.pcap
 *.cap
 *.pcapng
+*.exe
+*.rar
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
